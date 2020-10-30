@@ -5,6 +5,7 @@ namespace Bisna\Doctrine;
 use Bisna\Exception,
     Doctrine\DBAL\Types\Type,
     Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 
 /**
  * Doctrine Container class.
@@ -919,11 +920,17 @@ class Container
      * Initialize ODM Metadata drivers.
      *
      * @param array $config ODM Mapping drivers.
-     * @return \Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain
+     * @return \Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain|MappingDriverChain
+     * @throws Exception\NameNotFoundException
+     * @throws \ReflectionException
      */
     private function startODMMetadata(array $config = array())
     {
-        $metadataDriver = new \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain();
+        if (class_exists('Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain')) {
+            $metadataDriver = new \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain();
+        } else {
+            $metadataDriver = new MappingDriverChain;
+        }
 
         // Default metadata driver configuration
         $defaultMetadataDriver = array(
@@ -995,10 +1002,16 @@ class Container
      * @param array $config ORM Mapping drivers.
      *
      * @return \Doctrine\ORM\Mapping\Driver\DriverChain
+     * @throws Exception\NameNotFoundException
+     * @throws \ReflectionException
      */
     private function startORMMetadata(array $config = array())
     {
-        $metadataDriver = new \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain();
+        if (class_exists('Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain')) {
+            $metadataDriver = new \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain();
+        } else {
+            $metadataDriver = new MappingDriverChain;
+        }
 
         // Default metadata driver configuration
         $defaultMetadataDriver = array(
