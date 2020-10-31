@@ -15,11 +15,12 @@ class Doctrine extends \Zend_Application_Resource_ResourceAbstract
      * @var Bisna\Doctrine\Container
      */
     protected $container;
-    
+
     /**
      * Initializes Doctrine Context.
      *
      * @return Bisna\Doctrine\Container
+     * @throws \Bisna\Exception\NameNotFoundException
      */
     public function init()
     {
@@ -27,6 +28,12 @@ class Doctrine extends \Zend_Application_Resource_ResourceAbstract
         
         // Starting Doctrine container
         $this->container = new DoctrineContainer($config);
+
+        if (!empty($repositoryFactory = $config['orm']['entityManagers']['default']['repositoryFactory'])) {
+            $this->container->getEntityManager()->getConfiguration()->setRepositoryFactory(
+                new $repositoryFactory
+            );
+        }
 
         // Add to Zend Registry
         \Zend_Registry::set('doctrine', $this->container);
