@@ -3,6 +3,8 @@
 namespace Bisna\Application\Resource;
 
 use Bisna\Doctrine\Container as DoctrineContainer;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 
 /**
  * Zend Application Resource Doctrine class
@@ -21,6 +23,7 @@ class Doctrine extends \Zend_Application_Resource_ResourceAbstract
      *
      * @return Bisna\Doctrine\Container
      * @throws \Bisna\Exception\NameNotFoundException
+     * @throws \Doctrine\ORM\ORMException
      */
     public function init()
     {
@@ -34,6 +37,14 @@ class Doctrine extends \Zend_Application_Resource_ResourceAbstract
                 new $repositoryFactory
             );
         }
+
+        /* @var AnnotationDriver $annotationReader */
+        $annotationReader = $this->container->getEntityManager()->getConfiguration()->getMetadataDriverImpl();
+
+        \Gedmo\DoctrineExtensions::registerAbstractMappingIntoDriverChainORM(
+            new MappingDriverChain,
+            $annotationReader->getReader()
+        );
 
         // Add to Zend Registry
         \Zend_Registry::set('doctrine', $this->container);
