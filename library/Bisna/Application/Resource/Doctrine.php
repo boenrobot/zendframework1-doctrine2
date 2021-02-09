@@ -46,6 +46,8 @@ class Doctrine extends \Zend_Application_Resource_ResourceAbstract
             $annotationReader->getReader()
         );
 
+        \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
+
         // Add to Zend Registry
         \Zend_Registry::set('doctrine', $this->container);
 
