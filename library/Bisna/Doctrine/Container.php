@@ -215,6 +215,13 @@ class Container
             'namespace'    => '',
             'options'      => array()
         );
+        if (class_exists('Doctrine\Common\Cache\Psr6\DoctrineProvider')) {
+            $defaultCacheInstance = array(
+                'adapterClass' => 'Symfony\Component\Cache\Adapter\ArrayAdapter',
+                'namespace'    => '',
+                'options'      => array()
+            );
+        }
 
         $instances = array();
 
@@ -617,6 +624,10 @@ class Container
             $adapter = new $adapterClass($directory, $extension);
         } else {
             $adapter = new $adapterClass();
+        }
+
+        if (class_exists('Doctrine\Common\Cache\Psr6\DoctrineProvider')) {
+            $adapter = \Doctrine\Common\Cache\Psr6\DoctrineProvider::wrap($adapter);
         }
         
         // Define namespace for cache
